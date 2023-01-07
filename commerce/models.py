@@ -10,12 +10,12 @@ Seller
 """
 
 class Product(models.Model):
-    productName = models.CharField
-    productDescription = models.TextField
-    productMSRP = models.IntegerField
-    onSale = models.BooleanField
-    salePrice = models.IntegerField
-    publish = models.BooleanField
+    productName = models.CharField(max_length=100)
+    productDescription = models.TextField()
+    productMSRP = models.IntegerField()
+    onSale = models.BooleanField()
+    salePrice = models.IntegerField()
+    publish = models.BooleanField()
     # quantity = models.IntegerField
 
     def __str__(self) -> str:
@@ -26,7 +26,7 @@ class ProductMedia(models.Model):
     productImage = models.TextField()
 
     def __str__(self) -> str:
-        return self.productID
+        return self.productID.productName
 
 class ProductSize(models.Model):
     productID = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -38,11 +38,11 @@ class ProductSize(models.Model):
 
 class Order(models.Model):
     buyer = User.email
-    location = models.TextField
-    paid = models.BooleanField
-    fulfilled = models.BooleanField
-    orderDate = models.DateTimeField
-    totalAmount = models.IntegerField
+    location = models.TextField()
+    paid = models.BooleanField()
+    fulfilled = models.BooleanField()
+    orderDate = models.DateTimeField()
+    totalAmount = models.IntegerField()
 
     def __str__(self) -> str:
         return self.buyer + self.orderDate
