@@ -46,9 +46,9 @@ class Order(models.Model):
     totalAmount = models.IntegerField()
 
     def __str__(self) -> str:
-        return self.buyer + self.orderDate
+        return f'{self.buyer} {self.orderDate}'
     
-class CartItems(models.Model):
+class CartItem(models.Model):
     orderID = models.ForeignKey(Order, on_delete=models.CASCADE)
     productID = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
     quantity = models.IntegerField()
@@ -56,7 +56,7 @@ class CartItems(models.Model):
     total = models.IntegerField()
 
     def __str__(self) -> str:
-        return self.orderID + self.productID
+        return f'{self.orderID} {self.productID}'
 
 class OrderItem(models.Model):
     orderID = models.ForeignKey(Order, on_delete=models.CASCADE)

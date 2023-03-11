@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import productSerializer, productMediaSerializer, OrderSerializer
-from .models import Product, ProductMedia, CartItems
+from .serializers import productSerializer, productMediaSerializer, OrderSerializer, CartItemSerializer
+from .models import Product, ProductMedia, CartItem
 from django.utils import timezone
 
 
@@ -48,10 +48,8 @@ def viewProduct(request, pk):
 @permission_classes([IsAuthenticated])
 def createOrder(request): 
 
-    print(request.user)
-
     data = {
-        "buyer": request.user, 
+        "buyer": request.user.email, 
         "location": request.data['location'],
         "paid": False,
         "fulfilled": False,
@@ -59,23 +57,26 @@ def createOrder(request):
         "totalAmount": request.data['total']
     }
 
-    # serializer = OrderSerializer(data=data)
+    serializer = OrderSerializer(data=data)
 
-    # if serializer.is_valid():
-    #     order = serializer.save()
-    # else: 
-    #     print(serializer.errors)
+    if serializer.is_valid():
+        order = serializer.save()
+    else: 
+        print(serializer.errors)
 
-    # cart = request.data['cart']
-    # for item in cart: 
-    #     data = {
-    #         "orderID": order.id,
-    #         "productID": item['id'],
-    #         "quantity": item['quantity'],
-    #         "salePrice": item['MSRP'],
-    #         "total": item['total']
-    #     }
-    #     print(data)
+    cart = request.data['cart']
+    for item in cart: 
+        data = {
+            "orderID": order.id,
+            "productID": item['id'],
+            "quantity": item['quantity'],
+            "salePrice": item['MSRP'],
+            "total": item['total']
+        }
+        serializer = CartItemSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
     return Response({"message": "Order placed successfully"}, status=status.HTTP_200_OK)
 
 # This route is not needed unless we have a custom dashboard

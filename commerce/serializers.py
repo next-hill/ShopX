@@ -1,4 +1,4 @@
-from .models import Product, ProductMedia, Order
+from .models import Product, ProductMedia, Order, CartItem
 from rest_framework import serializers
 
 
@@ -15,4 +15,9 @@ class productMediaSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
+        fields = "__all__"
+
+class CartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
         fields = "__all__"
