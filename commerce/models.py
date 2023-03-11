@@ -16,7 +16,8 @@ class Product(models.Model):
     onSale = models.BooleanField()
     salePrice = models.IntegerField()
     publish = models.BooleanField()
-    # quantity = models.IntegerField
+    quantity = models.IntegerField(default=0)
+    picture = models.TextField(default="")
 
     def __str__(self) -> str:
         return self.productName
@@ -37,7 +38,7 @@ class ProductSize(models.Model):
         return self.productID
 
 class Order(models.Model):
-    buyer = User.email
+    buyer = models.TextField()
     location = models.TextField()
     paid = models.BooleanField()
     fulfilled = models.BooleanField()
@@ -46,6 +47,16 @@ class Order(models.Model):
 
     def __str__(self) -> str:
         return self.buyer + self.orderDate
+    
+class CartItems(models.Model):
+    orderID = models.ForeignKey(Order, on_delete=models.CASCADE)
+    productID = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    quantity = models.IntegerField()
+    salePrice = models.IntegerField()
+    total = models.IntegerField()
+
+    def __str__(self) -> str:
+        return self.orderID + self.productID
 
 class OrderItem(models.Model):
     orderID = models.ForeignKey(Order, on_delete=models.CASCADE)
