@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import productSerializer, productMediaSerializer, OrderSerializer, CartItemSerializer
-from .models import Product, ProductMedia, CartItem
+from .serializers import productSerializer, OrderSerializer, CartItemSerializer
+from .models import Product, CartItem
 from django.utils import timezone
 
 
@@ -39,9 +39,6 @@ def listAllProducts(request):
 def viewProduct(request, pk):
     product = Product.objects.get(id=pk)
     data = productSerializer(product).data
-    m = ProductMedia.objects.filter(productID=pk)
-    media = productMediaSerializer(m, many=True).data
-    data['media'] = media
     return Response(data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
@@ -74,7 +71,9 @@ def createOrder(request):
             "total": item['total']
         }
         serializer = CartItemSerializer(data=data)
-
+        product = Product.objects.get(id=item['id'])
+        product.quantity = product.quantity - item['quantity']
+        product.save()
         if serializer.is_valid():
             serializer.save()
     return Response({"message": "Order placed successfully"}, status=status.HTTP_200_OK)

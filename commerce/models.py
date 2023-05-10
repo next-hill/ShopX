@@ -13,6 +13,14 @@ class Product(models.Model):
     productName = models.CharField(max_length=100)
     productDescription = models.TextField()
     productMSRP = models.IntegerField()
+    thumbnail = models.TextField()
+    picture1 = models.TextField()
+    picture2 = models.TextField()
+    picture3 = models.TextField()
+    picture4 = models.TextField()
+    picture5 = models.TextField()
+    picture6 = models.TextField()
+    picture7 = models.TextField()
     onSale = models.BooleanField()
     salePrice = models.IntegerField()
     publish = models.BooleanField()
@@ -22,12 +30,12 @@ class Product(models.Model):
     def __str__(self) -> str:
         return self.productName
 
-class ProductMedia(models.Model):
-    productID = models.ForeignKey(Product, on_delete=models.CASCADE)
-    productImage = models.TextField()
+# class ProductMedia(models.Model):
+#     productID = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     productImage = models.TextField()
 
-    def __str__(self) -> str:
-        return self.productID.productName
+#     def __str__(self) -> str:
+#         return self.productID.productName
 
 class ProductSize(models.Model):
     productID = models.ForeignKey(Product, on_delete=models.CASCADE)

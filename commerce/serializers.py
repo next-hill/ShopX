@@ -1,4 +1,4 @@
-from .models import Product, ProductMedia, Order, CartItem
+from .models import Product, Order, CartItem
 from rest_framework import serializers
 
 
@@ -7,10 +7,10 @@ class productSerializer(serializers.ModelSerializer):
         model = Product
         fields = "__all__"
 
-class productMediaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductMedia
-        fields = ["id", "productImage"]
+# class productMediaSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ProductMedia
+#         fields = ["id", "productImage"]
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
