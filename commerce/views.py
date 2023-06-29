@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import productSerializer, OrderSerializer, CartItemSerializer
-from .models import Product, CartItem
+from .serializers import productSerializer, OrderSerializer, OrderItemSerializer
+from .models import Product, CartItem, Order
 from django.utils import timezone
 
 
@@ -60,23 +60,65 @@ def createOrder(request):
         order = serializer.save()
     else: 
         print(serializer.errors)
+        return Response({"message": "An error occured, please contact us"})
 
     cart = request.data['cart']
+
+    total = 0
     for item in cart: 
         data = {
             "orderID": order.id,
             "productID": item['id'],
-            "quantity": item['quantity'],
-            "salePrice": item['MSRP'],
-            "total": item['total']
+            "quantity": item['quantity']
         }
-        serializer = CartItemSerializer(data=data)
         product = Product.objects.get(id=item['id'])
-        product.quantity = product.quantity - item['quantity']
-        product.save()
+        if product.quantity > item['quantity']:
+            product.quantity = product.quantity - item['quantity']
+            product.save()
+        else:
+            errors = "Some items are not in stock, we will contact you soon"
+        data['salePrice'] = product.salePrice
+        item_total = product.salePrice * item["quantity"]
+        data['total'] = item_total
+        serializer = OrderItemSerializer(data=data)
         if serializer.is_valid():
+            total = total + item_total
             serializer.save()
-    return Response({"message": "Order placed successfully"}, status=status.HTTP_200_OK)
+        else:
+            print(serializer.errors)
+            return Response({"message": "An error occured, please contact us"})
+    order.totalAmount = total
+    order.save()
+    return Response({"message": "Order placed successfully", "id": order.id}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def payOrder(request, pk):
+    # handle payment things here
+    try:
+        order = Order.objects.get(id=pk)
+        order.paid = True
+        order.save()
+        return Response({"message": "You have successfully paid your order"})
+    except Order.DoesNotExist:
+        return Response({"message": "This order does not exist"})
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def myOrders(request):
+    orders = Order.objects.filter(buyer=request.user.email)
+    data = OrderSerializer(orders, many=True).data
+
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def addItemToCart(request):
+    # handle adding item to cart so that it can be saved to the db
+
+    return Response({"message": "Success"})
 
 # This route is not needed unless we have a custom dashboard
 @api_view(['POST'])

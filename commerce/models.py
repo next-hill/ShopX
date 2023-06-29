@@ -72,7 +72,7 @@ class OrderItem(models.Model):
     quantity = models.IntegerField()
 
     def __str__(self) -> str:
-        return self.orderID
+        return f'{self.orderID}'
 
 class PaymentDetail(models.Model):
     orderID = models.OneToOneField(Order, on_delete=models.CASCADE)
@@ -80,4 +80,4 @@ class PaymentDetail(models.Model):
     all_details = models.TextField()
     
     def __str__(self) -> str:
-        return self.orderID
+        return f'{self.orderID}'
